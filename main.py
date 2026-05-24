@@ -1,6 +1,7 @@
 
 import mysql.connector
 
+# ---------------- DB ----------------
 class DB:
     def __init__(self):
         self.mydb = mysql.connector.connect(
@@ -13,6 +14,7 @@ class DB:
         cursor.execute("CREATE DATABASE IF NOT EXISTS todo_list")
         cursor.execute("USE todo_list")
 
+# ---------------- SETUP ----------------
 class SetUp:
     def __init__(self, db):
         cursor = db.mydb.cursor()
@@ -37,6 +39,7 @@ class SetUp:
         db.mydb.commit()
         cursor.close()
 
+# ---------------- REPOSITORY ----------------
 class TaskRepository:
     def __init__(self, db):
         self.db = db
@@ -117,6 +120,7 @@ class TaskRepository:
         self.db.mydb.commit()
         cursor.close()
 
+# ---------------- CLEANUP ----------------
 def on_exit_cleanup(db):
     cursor = db.mydb.cursor()
 
@@ -127,7 +131,7 @@ def on_exit_cleanup(db):
     db.mydb.commit()
     cursor.close()
 
-
+# ---------------- MAIN ----------------
 def main():
     db = DB()
     SetUp(db)
@@ -152,11 +156,13 @@ def main():
 
         choice = input("👉 Choose:")
 
+        # ---------------- CREATE USER ----------------
         if choice == "1":
             name = input("👤 User name: ")
             rep.create_user(name)
             print(f"✅ User '{name}' created")
 
+        # ---------------- CREATE TASK ----------------
         elif choice == "2":
             title = input("📝 Task title: ")
             user_id = int(input("👤 User ID: "))
@@ -167,6 +173,7 @@ def main():
             else:
                 print("❌ User not found")
 
+        # ---------------- USERS ----------------
         elif choice == "3":
             print("\n" + "=" * 40)
             print("👤 Users")
@@ -183,6 +190,7 @@ def main():
             print("-" * 40)
             print(f"Total: {len(users)} users")
 
+        # ---------------- TASKS BY USER ----------------
         elif choice == "4":
             user_id = input("👤Enter user ID: ")
             tasks = rep.read_tasks(user_id)
@@ -203,6 +211,7 @@ def main():
                 print("-" * 40)
                 print(f"Total: {len(tasks)} tasks")
 
+        # ---------------- ALL DATA ----------------
         elif choice == "5":
             rows = rep.read_all()
             print("\n" + "=" * 70)
@@ -216,16 +225,19 @@ def main():
             print("-" * 70)
             print(f"Total: {len(rows)} records")
 
+        # ---------------- DELETE ----------------
         elif choice == "6":
             task_id = int(input("Task ID: "))
             rep.delete_task(task_id)
             print(f"🗑 Task {task_id} deleted")
 
+        # ---------------- DONE ----------------
         elif choice == "7":
             task_id = int(input("Task ID: "))
             rep.mark_done(task_id)
             print(f"✅ Task {task_id} marked DONE")
 
+        # ---------------- EXIT ----------------
         elif choice == "8":
             on_exit_cleanup(db)
             print("\n👋 Bye! Database cleared.")
